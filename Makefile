@@ -24,7 +24,7 @@ SRC_FILES = $(wildcard $(SRC_DIR)/*.cpp)
 
 # INKLUDERINGSFILER–var dina header-filer finns
 # Mac INTEL INCLUDE_PATHS!
-INCLUDE_PATHS = -Iinclude -I/usr/local/include
+INCLUDE_PATHS = -Iinclude -I/usr/local/include 
 # Mac ARM INCLUDE_PATHS!
 # INCLUDE_PATHS = -Iinclude -I/opt/homebrew/include
 # Windows INCLUDE_PATHS!

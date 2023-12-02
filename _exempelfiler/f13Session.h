@@ -1,7 +1,7 @@
 #ifndef SESSION_H
 #define SESSION_H
 
-#include "Component.h"
+#include "f13Component.h"
 #include <vector>
 
 class Session

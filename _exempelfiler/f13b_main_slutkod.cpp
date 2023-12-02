@@ -1,9 +1,9 @@
 #include "Constants.h" //gResPath-contains path to your resources.
 #include <SDL2/SDL.h>
-#include "Session.h"
-#include "Component.h"
+#include "f13Session.h"
+#include "f13Component.h"
 #include <SDL2/SDL_image.h>
-#include "System.h"
+#include "f13System.h"
 #include <string>
  
 /*

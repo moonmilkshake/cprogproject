@@ -1,7 +1,7 @@
-#include "Session.h"
+#include "f13Session.h"
 #include <SDL2/SDL.h>
-#include "Component.h"
-#include "System.h"
+#include "f13Component.h"
+#include "f13System.h"
 
 using namespace std;
 
