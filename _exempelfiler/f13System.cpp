@@ -24,5 +24,3 @@ System::~System() {
 
 System sys;
 
-
-
