@@ -10,7 +10,7 @@ namespace crane
     {
         SDL_Init(SDL_INIT_EVERYTHING);
         // initialiserar SDL-biblioteket och aktiverar alla des delsystem, tex grafik, ljud
-        win = SDL_CreateWindow("Game", 10, 10, 1000, 1000, 0);
+        win = SDL_CreateWindow("Game", 10, 10, 1000, 700, 0);
         // Skapar ett fönster med titel Game, placerat vid 10,10. och med dimensionerna 700x500 pixlar.
         // 0 representerar antal flaggor
         ren = SDL_CreateRenderer(win, -1, 0);

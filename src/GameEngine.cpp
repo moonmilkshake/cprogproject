@@ -20,8 +20,7 @@ void GameEngine::remove(Component* component) {
 
 void GameEngine::run() {
     //Implementera spelloopen
-    int playerX = 0;
-    int playerY = 200;
+
     bool quit = false;
     Uint32 tickInterval = 1000 / FPS; //Räkna ut millisekunder mellan varje frame
     while (!quit) {
@@ -82,10 +81,6 @@ void GameEngine::run() {
 
         SDL_SetRenderDrawColor(graphic.ren, 255, 255, 255, 255); //Sätter färgen att rendera med till vit
         SDL_RenderClear(graphic.ren); //tömmer renderaren (med färgen vit?)
-
-        //Renderar bakgrunden utifrån vart spelaren befinner sig på skärmen
-        graphic.renderBackground(playerX, playerY);
-        playerX++;
 
         for (Component* c : components) { //Rita ut alla komponenter
             c->draw();

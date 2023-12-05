@@ -10,7 +10,7 @@ GameEngine engine;
 
 int main(int argc, char** argv) {
 
-    Player* player =  Player::getInstance(10, 700, 75, 75);
+    Player* player =  Player::getInstance(0, 500, 75, 75);
     engine.add(player);
     engine.run();
 

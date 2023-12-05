@@ -10,14 +10,18 @@ namespace crane
     public:
         static Player *getInstance(int x, int y, int w, int h);
         ~Player();
-    protected:
-        Player(int x, int y, int w, int h);
         void draw() const override;
         void tick() override;
-
+        void keyDown(const SDL_Event &);
+    protected:
+        Player(int x, int y, int w, int h);
     private:
 		SDL_Texture* playerTexture;
         static Player* instance;
+        int xPosition;
+        int yPosition;
+        int xVelocity;
+        int yVelocity;
     };
 
 }
