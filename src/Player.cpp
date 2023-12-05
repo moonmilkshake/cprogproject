@@ -15,6 +15,8 @@ namespace crane
         playerTexture = IMG_LoadTexture(graphic.get_ren(), (constants::gResPath + "images/tempPlayer.png").c_str());
         xPosition = x;
         yPosition = y;
+        xVelocity = 0;
+        yVelocity = 0;
     }
 
     Player::~Player()
@@ -47,26 +49,22 @@ namespace crane
         if (keys[SDL_SCANCODE_UP])
         {
             // Move the player up
-            yVelocity = -1;
-            std::cout << "uppåt" << std::endl;
-
+            yVelocity = -10;
         }
         if (keys[SDL_SCANCODE_DOWN])
         {
             // Move the player down
-            yVelocity = 1;
-
+            yVelocity = 10;
         }
         if (keys[SDL_SCANCODE_LEFT])
         {
             // Move the player left
-            xVelocity = -1;
-
+            xVelocity = -10;
         }
         if (keys[SDL_SCANCODE_RIGHT])
         {
             // Move the player right
-            xVelocity = 1;
+            xVelocity = 10;
         }
     }
 
@@ -75,7 +73,8 @@ namespace crane
         // Implementera hur klassen uppdateras varje frame
         xPosition += xVelocity;
         yPosition += yVelocity;
-        graphic.renderBackground(xPosition, yPosition);
+        xVelocity = 0;
+        yVelocity = 0;
     }
 
 }
