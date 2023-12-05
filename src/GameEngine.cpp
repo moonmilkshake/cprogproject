@@ -1,8 +1,12 @@
 #include "GameEngine.h"
 #include <SDL2/SDL.h>
 #include "Component.h"
+#include "Graphics.h"
 
 using namespace std;
+
+namespace crane 
+{
 
 #define FPS 60
 
@@ -16,6 +20,8 @@ void GameEngine::remove(Component* component) {
 
 void GameEngine::run() {
     //Implementera spelloopen
+    int playerX = 0;
+    int playerY = 200;
     bool quit = false;
     Uint32 tickInterval = 1000 / FPS; //Räkna ut millisekunder mellan varje frame
     while (!quit) {
@@ -27,20 +33,25 @@ void GameEngine::run() {
                 case SDL_QUIT: 
                     quit = true; 
                     break;
-                case SDLK_UP:
-                    // Hantera up key press
+                case SDL_KEYUP:
+					for (Component* c : components) {
+						c->keyUp(event);
+                    }
                     break;
-                case SDLK_DOWN:
-                    // Hantera down key press
+                case SDL_KEYDOWN:
+                    for (Component* c : components) {
+						c->keyDown(event);
+                    }
                     break;
-                case SDLK_LEFT:
-                    // Hantera left key press
+                case SDL_MOUSEBUTTONDOWN:
+					for (Component* c : components) {
+						c->mouseDown(event);
+                    }
                     break;
-                case SDLK_RIGHT:
-                    // Hantera right key press
-                    break;
-                case SDLK_SPACE:
-                    // Hantera space bar press
+                case SDL_MOUSEBUTTONUP:
+					for (Component* c : components) {
+						c->mouseUp(event);
+                    }
                     break;
 
 
@@ -48,14 +59,14 @@ void GameEngine::run() {
 
         } //while PollEvent 
 
-		for (Component* c : comps) { //Gå igenom varje komponent och uppdatera dem vardera frame
+		for (Component* c : components) { //Gå igenom varje komponent och uppdatera dem vardera frame
 			c->tick();
         }
 
         for (Component* c : added) { //Lägg till komponenter som har tillkommit i detta varv av loopen
             components.push_back(c);
         }
-        added:clear();
+        added.clear();
 
         for (Component* c : removed) { //Ta bort komponenter som ska bort detta varv
             for (vector<Component*>::iterator i = components.begin(); i != components.end();) 
@@ -69,8 +80,13 @@ void GameEngine::run() {
         }
         removed.clear();
 
-        SDL_SetRenderDrawColor(sys.ren, 255, 255, 255, 255); //Sätter färgen att rendera med till vit
+        SDL_SetRenderDrawColor(graphic.ren, 255, 255, 255, 255); //Sätter färgen att rendera med till vit
         SDL_RenderClear(graphic.ren); //tömmer renderaren (med färgen vit?)
+
+        //Renderar bakgrunden utifrån vart spelaren befinner sig på skärmen
+        graphic.renderBackground(playerX, playerY);
+        playerX++;
+
         for (Component* c : components) { //Rita ut alla komponenter
             c->draw();
         }
@@ -81,5 +97,8 @@ void GameEngine::run() {
             SDL_Delay(delay);
         }
     } //while !quit
+}
+
+    GameEngine::~GameEngine() {}
 
 }

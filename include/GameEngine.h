@@ -1,8 +1,10 @@
-#inndef GAMEENGINE_H
+#ifndef GAMEENGINE_H
 #define GAMEENGINE_H
 
 #include "Component.h"
 #include <vector>
+
+namespace crane {
 
 class GameEngine
 {
@@ -10,10 +12,12 @@ class GameEngine
         void run();
         void add(Component* component);
         void remove(Component* component);
+        ~GameEngine();
     private:
         std::vector<Component*> components;
         std::vector<Component*> added;
         std::vector<Component*> removed;
 };
 
+}
 #endif
