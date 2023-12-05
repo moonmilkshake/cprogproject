@@ -20,11 +20,12 @@ namespace crane
         SDL_Renderer *ren; // pekare till SDL_Renderer
         Mix_Chunk *music;  // pekare till SDL_mixer chunk;
         TTF_Font* font;    // pekare till font
-        void loadBackground(const std::string& filepath);
-        void renderBackground(int xOffset, int yOffset);
         void setCustomBackground(const std::string& filePath);
-        SDL_Texture* backgroundTexture;
+        void renderBackground(int xOffset, int yOffset);
+    private:
+        void loadBackground(const std::string& filepath);
         SDL_Texture* loadTexture(const std::string& filePath);
+        SDL_Texture* backgroundTexture;
     };
 
     extern Graphics graphic; // extern innebär att variabeln graphic är definierad någon annanstans.

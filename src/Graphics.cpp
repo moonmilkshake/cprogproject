@@ -27,10 +27,12 @@ namespace crane
         // Spelar upp inladdade musiken, -1= använda första tillgängliga kanal, andra -1 == loopa musiken.
     }
 
+    //Används inom denna klass för att ladda en bakgrund
     void Graphics::loadBackground(const std::string& filePath) {
         backgroundTexture = loadTexture(filePath);
     }
 
+    //Skapar en texture med renderaren och (en ny skapad) texture
     SDL_Texture* Graphics::loadTexture(const std::string& filePath) {
         SDL_Texture* texture = nullptr;
         SDL_Surface* surface = IMG_Load(filePath.c_str());
@@ -41,11 +43,14 @@ namespace crane
         return texture;
     }
 
+    //Renderar bakgrunden till skärmen 
     void Graphics::renderBackground(int xOffset, int yOffset) {
+        //offset säger representerar spelaren/kamerans position, de två sista parametrarna blir storleken på bilden i pixlar
         SDL_Rect destRect = { -xOffset, -yOffset, 2000, 1200 };
         SDL_RenderCopy(ren, backgroundTexture, nullptr, &destRect);
     }
 
+    //Kan kallas på för att ladda in en egenvald bakgrund till spelet
     void Graphics::setCustomBackground(const std::string& filePath) {
         loadBackground(filePath);
     }
@@ -60,6 +65,7 @@ namespace crane
 
     Graphics::~Graphics()
     {
+        SDL_DestroyTexture(backgroundTexture);
         Mix_FreeChunk(music);
         Mix_CloseAudio();
         SDL_DestroyWindow(win);

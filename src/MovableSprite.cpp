@@ -4,6 +4,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 
+//Klass för att hantera objekt på skärmen som kan röra på sig
 namespace crane {
 
     MovableSprite::MovableSprite(int x, int y, int w, int h) : Component(x, y, w, h) {

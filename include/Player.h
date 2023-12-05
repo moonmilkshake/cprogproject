@@ -13,6 +13,8 @@ namespace crane
         void draw() const override;
         void tick() override;
         void keyDown(const SDL_Event &) override;
+        int getPlayerX() const;
+        int getPlayerY() const;
     protected:
         Player(int x, int y, int w, int h);
     private:

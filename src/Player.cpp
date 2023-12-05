@@ -5,6 +5,7 @@
 #include <SDL2/SDL_image.h>
 #include <iostream>
 
+//Klass som hanterar spelaren på skärmen
 namespace crane
 {
     Player* Player::instance = nullptr;
@@ -33,9 +34,9 @@ namespace crane
         return instance;
     }
 
+    //Ritar ut spelaren på kartan och anpassar kartan i förhållande till spelarens koordinater
     void Player::draw() const
     {
-        // Implementera hur klassen ritas ut
         graphic.renderBackground(xPosition, yPosition);
         SDL_RenderCopy(graphic.get_ren(), playerTexture, NULL, &getRect());
     }
@@ -75,6 +76,14 @@ namespace crane
         yPosition += yVelocity;
         xVelocity = 0;
         yVelocity = 0;
+    }
+
+    int Player::getPlayerX() const {
+        return xPosition;
+    }
+
+    int Player::getPlayerY() const {
+        return yPosition;
     }
 
 }

@@ -19,6 +19,91 @@ void GameEngine::remove(Component* component) {
 }
 
 void GameEngine::run() {
+    bool quit = false;
+    Uint32 tickInterval = 1000 / FPS;
+
+    while (!quit) {
+        Uint32 nextTick = SDL_GetTicks() + tickInterval;
+
+        SDL_Event event;
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                case SDL_QUIT:
+                    quit = true;
+                    break;
+                case SDL_KEYUP:
+                    for (Component* c : components) {
+                        c->keyUp(event);
+                    }
+                    break;
+                case SDL_KEYDOWN:
+                    for (Component* c : components) {
+                        c->keyDown(event);
+                    }
+                    break;
+                case SDL_MOUSEBUTTONDOWN:
+                    for (Component* c : components) {
+                        c->mouseDown(event);
+                    }
+                    break;
+                case SDL_MOUSEBUTTONUP:
+                    for (Component* c : components) {
+                        c->mouseUp(event);
+                    }
+                    break;
+                // Add more event handling cases if needed
+            }
+        }
+
+        SDL_SetRenderDrawColor(graphic.ren, 255, 255, 255, 255);
+        SDL_RenderClear(graphic.ren);
+
+        // Render background first
+        graphic.renderBackground(0, 0);
+
+        // Handle component updates
+        for (Component* c : components) {
+            c->tick();
+        }
+
+        // Handle components to be added
+        for (Component* c : added) {
+            components.push_back(c);
+        }
+        added.clear();
+
+        // Handle components to be removed
+        for (Component* c : removed) {
+            components.erase(std::remove(components.begin(), components.end(), c), components.end());
+        }
+        removed.clear();
+
+        // Render components (including the start button)
+        for (Component* c : components) {
+            c->draw();
+        }
+
+        // Present the render
+        SDL_RenderPresent(graphic.ren);
+
+        // Delay until next frame
+        int delay = nextTick - SDL_GetTicks();
+        if (delay > 0) {
+            SDL_Delay(delay);
+        }
+    }
+}
+
+    GameEngine::~GameEngine() {}
+
+}
+
+
+
+
+/*
+
+void GameEngine::run() {
     //Implementera spelloopen
 
     bool quit = false;
@@ -92,8 +177,4 @@ void GameEngine::run() {
             SDL_Delay(delay);
         }
     } //while !quit
-}
-
-    GameEngine::~GameEngine() {}
-
-}
+}*/
