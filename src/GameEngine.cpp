@@ -1,180 +1,191 @@
 #include "GameEngine.h"
 #include <SDL2/SDL.h>
-#include "Component.h"
 #include "Graphics.h"
+#include <vector>
+#include "Component.h"
+#include <iostream>
 
 using namespace std;
-
-namespace crane 
-{
+using namespace crane;
 
 #define FPS 60
 
-void GameEngine::add(Component* component) {
-    added.push_back(component);
+GameEngine::GameEngine() : gameRunning(false)
+{
+    // Initialize any necessary game engine state here
 }
 
-void GameEngine::remove(Component* component) {
+void GameEngine::addGameComponent(Component *component)
+{
+    addedGameComponent.push_back(component);
+}
+
+void GameEngine::removeGameComponent(Component *component)
+{
     removed.push_back(component);
 }
 
-void GameEngine::run() {
+void GameEngine::addUIComponent(Component *component)
+{
+    addedUiComponent.push_back(component);
+}
+
+void GameEngine::removeUIComponent(Component *component)
+{
+   // auto it = std::find(uiComponents.begin(), uiComponents.end(), component);
+   // if (it != uiComponents.end())
+   // {
+     //   uiComponents.erase(it);
+        // Consider managing memory here if necessary
+    //}
+    removed.push_back(component);
+}
+
+void GameEngine::startGame()
+{
+    gameRunning = true;
+}
+
+bool GameEngine::isGameRunning() const
+{
+    return gameRunning;
+}
+
+void GameEngine::run()
+{
     bool quit = false;
     Uint32 tickInterval = 1000 / FPS;
+    gameRunning = false;
 
-    while (!quit) {
+    while (!quit)
+    {
         Uint32 nextTick = SDL_GetTicks() + tickInterval;
-
         SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-                case SDL_QUIT:
-                    quit = true;
-                    break;
-                case SDL_KEYUP:
-                    for (Component* c : components) {
-                        c->keyUp(event);
-                    }
-                    break;
-                case SDL_KEYDOWN:
-                    for (Component* c : components) {
+
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT)
+            {
+                quit = true;
+            }
+
+            // Handle key events for game components
+            if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
+            {
+                for (Component *c : gameComponents)
+                {
+                    if (event.type == SDL_KEYDOWN)
+                    {
                         c->keyDown(event);
                     }
-                    break;
-                case SDL_MOUSEBUTTONDOWN:
-                    for (Component* c : components) {
-                        c->mouseDown(event);
+                    else if (event.type == SDL_KEYUP)
+                    {
+                        c->keyUp(event);
                     }
-                    break;
-                case SDL_MOUSEBUTTONUP:
-                    for (Component* c : components) {
-                        c->mouseUp(event);
-                    }
-                    break;
-                // Add more event handling cases if needed
+                }
+            }
+
+            // Forward mouse events to UI components
+            for (Component *c : uiComponents)
+            {
+                if (event.type == SDL_MOUSEBUTTONDOWN)
+                {
+                    c->mouseDown(event);
+                }
+                else if (event.type == SDL_MOUSEBUTTONUP)
+                {
+                    c->mouseUp(event);
+                }
             }
         }
 
-        SDL_SetRenderDrawColor(graphic.ren, 255, 255, 255, 255);
-        SDL_RenderClear(graphic.ren);
-
-        // Render background first
-        graphic.renderBackground(0, 0);
-
-        // Handle component updates
-        for (Component* c : components) {
-            c->tick();
+        // Update game components if the game is running
+        if (isGameRunning())
+        {
+            for (Component *c : gameComponents)
+            {
+                c->tick();
+            }
         }
 
-        // Handle components to be added
-        for (Component* c : added) {
-            components.push_back(c);
+        if (!isGameRunning())
+        {
+            for (Component *c : uiComponents)
+            {
+                c->tick();
+                c->draw();
+            }
         }
-        added.clear();
 
-        // Handle components to be removed
-        for (Component* c : removed) {
-            components.erase(std::remove(components.begin(), components.end(), c), components.end());
+        // Add new components
+        for (Component *c : addedGameComponent)
+        {
+            gameComponents.push_back(c);
+        }
+        addedGameComponent.clear();
+
+        // Remove components
+        for (Component *c : removed)
+        {
+            auto removeComponent = [&c](vector<Component *> &components)
+            {
+                auto it = std::find(components.begin(), components.end(), c);
+                if (it != components.end())
+                {
+                    components.erase(it);
+                    // Consider managing memory here if necessary
+                }
+            };
+            removeComponent(gameComponents);
+            removeComponent(uiComponents);
         }
         removed.clear();
 
-        // Render components (including the start button)
-        for (Component* c : components) {
-            c->draw();
+        // Render the frame
+        SDL_SetRenderDrawColor(graphic.get_ren(), 255, 255, 255, 255);
+        SDL_RenderClear(graphic.get_ren());
+
+        // Render background
+        graphic.renderBackground(0, 0);
+
+        // Render UI components if the game is not running
+        if (!isGameRunning())
+        {
+            for (Component *c : uiComponents)
+            {
+                c->draw();
+            }
         }
 
-        // Present the render
-        SDL_RenderPresent(graphic.ren);
+        // Render game components if the game is running
+        if (isGameRunning())
+        {
+            for (Component *c : gameComponents)
+            {
+                c->draw();
+            }
+        }
 
-        // Delay until next frame
+        SDL_RenderPresent(graphic.get_ren());
+
+        // Delay to maintain frame rate
         int delay = nextTick - SDL_GetTicks();
-        if (delay > 0) {
+        if (delay > 0)
+        {
             SDL_Delay(delay);
         }
     }
 }
 
-    GameEngine::~GameEngine() {}
-
+GameEngine::~GameEngine()
+{
+    // Clean up components
+    for (auto c : gameComponents)
+    {
+        delete c;
+    }
+    for (auto c : uiComponents)
+    {
+        delete c;
+    }
 }
-
-
-
-
-/*
-
-void GameEngine::run() {
-    //Implementera spelloopen
-
-    bool quit = false;
-    Uint32 tickInterval = 1000 / FPS; //Räkna ut millisekunder mellan varje frame
-    while (!quit) {
-        Uint32 nextTick = SDL_GetTicks() + tickInterval; //Räkna ut när nästa frame ska visas i millisekunder
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-                //Implementera varje case
-                case SDL_QUIT: 
-                    quit = true; 
-                    break;
-                case SDL_KEYUP:
-					for (Component* c : components) {
-						c->keyUp(event);
-                    }
-                    break;
-                case SDL_KEYDOWN:
-                    for (Component* c : components) {
-						c->keyDown(event);
-                    }
-                    break;
-                case SDL_MOUSEBUTTONDOWN:
-					for (Component* c : components) {
-						c->mouseDown(event);
-                    }
-                    break;
-                case SDL_MOUSEBUTTONUP:
-					for (Component* c : components) {
-						c->mouseUp(event);
-                    }
-                    break;
-
-
-            } //switch
-
-        } //while PollEvent 
-
-		for (Component* c : components) { //Gå igenom varje komponent och uppdatera dem vardera frame
-			c->tick();
-        }
-
-        for (Component* c : added) { //Lägg till komponenter som har tillkommit i detta varv av loopen
-            components.push_back(c);
-        }
-        added.clear();
-
-        for (Component* c : removed) { //Ta bort komponenter som ska bort detta varv
-            for (vector<Component*>::iterator i = components.begin(); i != components.end();) 
-            {
-                if (*i == c) {
-                    i = components.erase(i);
-                } else {
-                    i++;
-                }
-            }
-        }
-        removed.clear();
-
-        SDL_SetRenderDrawColor(graphic.ren, 255, 255, 255, 255); //Sätter färgen att rendera med till vit
-        SDL_RenderClear(graphic.ren); //tömmer renderaren (med färgen vit?)
-
-        for (Component* c : components) { //Rita ut alla komponenter
-            c->draw();
-        }
-        SDL_RenderPresent(graphic.ren); //Presentera frame:en på skärmen
-
-        int delay = nextTick - SDL_GetTicks(); //Räkna ut tiden i millisekunder krav tills nästa frame ska visas
-        if (delay > 0) { //Fördröj loopen om frame:en inte ska visas än
-            SDL_Delay(delay);
-        }
-    } //while !quit
-}*/

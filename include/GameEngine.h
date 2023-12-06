@@ -6,18 +6,27 @@
 
 namespace crane {
 
-class GameEngine
-{
+    class GameEngine {
     public:
         void run();
-        void add(Component* component);
-        void remove(Component* component);
+        void addGameComponent(Component* component);
+        void removeGameComponent(Component* component);
+        void addUIComponent(Component* component);
+        void removeUIComponent(Component* component);
+        void startGame();
+        bool isGameRunning() const;
+        GameEngine();
         ~GameEngine();
+
     private:
-        std::vector<Component*> components;
-        std::vector<Component*> added;
+        std::vector<Component*> addedGameComponent;
+        std::vector<Component*> addedUiComponent;
         std::vector<Component*> removed;
-};
+        std::vector<Component*> gameComponents;
+        std::vector<Component*> uiComponents;
+        bool gameRunning = false;
+    };
 
 }
-#endif
+
+#endif // GAMEENGINE_H

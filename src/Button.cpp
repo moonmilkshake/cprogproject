@@ -4,6 +4,7 @@
 #include <SDL2/SDL_image.h>
 #include "Component.h"
 #include "Constants.h"
+#include <iostream>
 
 namespace crane{
     Button::Button(int x, int y, int w, int h, std::string txt): Component(x, y, w, h)
@@ -11,14 +12,16 @@ namespace crane{
         SDL_Surface*surf = TTF_RenderText_Solid(graphic.get_font(), txt.c_str(), { 0,0,0 });
         texture = SDL_CreateTextureFromSurface(graphic.get_ren(), surf);
         SDL_FreeSurface(surf);
-        upIcon = IMG_LoadTexture(graphic.get_ren(), (constants::gResPath + ".png").c_str() );
-    }
+        startIcon = IMG_LoadTexture(graphic.get_ren(), (constants::gResPath + "images/3e1af784d6f5369.png").c_str() );
+        downIcon = IMG_LoadTexture(graphic.get_ren(), (constants::gResPath + "").c_str() );
 
+    }
 
     Button::~Button()
     {
         SDL_DestroyTexture(texture);
-        SDL_DestroyTexture(upIcon);
+        SDL_DestroyTexture(startIcon);
+        SDL_DestroyTexture(downIcon);
     }
 
     Button* Button::getInstance(int x, int y, int w, int h, std::string txt){
@@ -39,12 +42,27 @@ namespace crane{
         isDown = false;
     }
 
-    void Button::draw() const{
-        if (isDown)
-            SDL_RenderCopy(graphic.get_ren(), upIcon, NULL, &getRect());
-
-        SDL_RenderCopy(graphic.get_ren(), texture, NULL, &getRect());
-
+    void Button::draw() const {
+    // Render the button icon
+    if (isDown) {
+        if (downIcon != nullptr) {
+            SDL_RenderCopy(graphic.get_ren(), downIcon, NULL, &getRect());
+        }
+    } else {
+        if (startIcon != nullptr) {
+            SDL_RenderCopy(graphic.get_ren(), startIcon, NULL, &getRect());
+        }
     }
+
+    // Render the button text
+    if (texture != nullptr) {
+        // Adjust the destination rectangle if necessary to position the text correctly
+        SDL_Rect textRect = getRect();
+        // You might want to adjust textRect here to position the text correctly
+        SDL_RenderCopy(graphic.get_ren(), texture, NULL, &textRect);
+    }
+}
+
+
 
 }
