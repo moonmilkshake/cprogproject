@@ -27,7 +27,13 @@ namespace crane
         SDL_Texture* loadTexture(const std::string& filePath);
         double screenWidthZoom = 1.25;
         double screenHeightZoom = 1.25;
+        int getScreenWidth() const;
+        int getScreenHeight() const;
+        void setScreenSize(int newScreenWidth, int newScreenHeight);
     private:
+        int screenWidth;
+        int screenHeight;
+
     };
 
     extern Graphics graphic; // extern innebär att variabeln graphic är definierad någon annanstans.

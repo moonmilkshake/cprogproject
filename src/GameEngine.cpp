@@ -32,12 +32,12 @@ void GameEngine::addUIComponent(Component *component)
 
 void GameEngine::removeUIComponent(Component *component)
 {
-   // auto it = std::find(uiComponents.begin(), uiComponents.end(), component);
-   // if (it != uiComponents.end())
-   // {
-     //   uiComponents.erase(it);
+    auto it = std::find(uiComponents.begin(), uiComponents.end(), component);
+    if (it != uiComponents.end())
+    {
+        uiComponents.erase(it);
         // Consider managing memory here if necessary
-    //}
+    }
     removed.push_back(component);
 }
 
@@ -55,7 +55,7 @@ void GameEngine::run()
 {
     bool quit = false;
     Uint32 tickInterval = 1000 / FPS;
-    gameRunning = false;
+    // gameRunning = true;
 
     while (!quit)
     {
@@ -113,9 +113,14 @@ void GameEngine::run()
             for (Component *c : uiComponents)
             {
                 c->tick();
-                c->draw();
             }
         }
+
+        for (Component *c : addedUiComponent)
+        {
+            uiComponents.push_back(c);
+        }
+        addedUiComponent.clear();
 
         // Add new components
         for (Component *c : addedGameComponent)

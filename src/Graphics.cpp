@@ -28,8 +28,25 @@ namespace crane
         music = Mix_LoadWAV((constants::gResPath + "sounds/christmasPiano.mp3").c_str());
         Mix_PlayChannel(-1, music, -1);
         // Spelar upp inladdade musiken, -1= använda första tillgängliga kanal, andra -1 == loopa musiken.
+        SDL_GetWindowSizeInPixels(win, &screenWidth, &screenHeight);
     }
 
+    void Graphics::setScreenSize(int newScreenWidth, int newScreenHeight)
+    {
+        screenWidth = newScreenWidth;
+        screenHeight = newScreenHeight;
+        SDL_SetWindowSize(win, screenWidth, screenHeight);
+    }
+
+    int Graphics::getScreenHeight() const
+    {
+        return screenHeight;
+    }
+
+    int Graphics::getScreenWidth() const
+    {
+        return screenWidth;
+    }
 
     void Graphics::loadBackground(const std::string& filePath) {
         backgroundTexture = loadTexture(filePath);
@@ -46,8 +63,7 @@ namespace crane
     }
 
     void Graphics::renderBackground(int xOffset, int yOffset) {
-        int screenWidth, screenHeight;
-        SDL_GetWindowSizeInPixels(win, &screenWidth, &screenHeight);
+
         //SDL_Rect destRect = { 0, 0, screenWidth, screenHeight };
         SDL_RenderCopy(ren, backgroundTexture, nullptr, nullptr);
     }

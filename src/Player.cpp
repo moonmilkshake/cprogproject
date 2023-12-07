@@ -5,47 +5,44 @@
 #include <SDL2/SDL_image.h>
 #include <iostream>
 
-// Klass som hanterar spelaren på skärmen
-namespace crane
-{
+// Implementering till spelet som hanterar spelaren
+using namespace crane;
+
     Player *Player::instance = nullptr;
 
-    Player::Player(int x, int y, int w, int h) : Component(x, y, w, h)
+    Player::Player(int x, int y, int w, int h, std::string assetPath) : MovableSprite(x, y, w, h, assetPath)
     {
         // Hantera skapandet av Player, grafik etc
-        playerTexture = IMG_LoadTexture(graphic.get_ren(), (constants::gResPath + "images/tempPlayer.png").c_str());
-        xPosition = x;
-        yPosition = y;
+        //playerTexture = IMG_LoadTexture(graphic.get_ren(), (constants::gResPath + assetPath).c_str());
         xVelocity = 0;
         yVelocity = 0;
-        speed = 3;
         adaptToYPosition = false;
         adaptFactorToYPosition = 1;
         previousYPosition = rect.y;
     }
 
-    Player::~Player()
-    {
-        SDL_DestroyTexture(playerTexture);
-    }
+    //Player::~Player() implementera om Player får egna medlemmar att städa bort
+    //{
+        //SDL_DestroyTexture(playerTexture);
+   // }
 
     // Hämta pekare till spelare, tillåter bara en instans av Player
-    Player *Player::getInstance(int x, int y, int w, int h)
+    Player *Player::getInstance(int x, int y, int w, int h, std::string assetPath)
     {
         if (!instance)
         {
-            instance = new Player(x, y, w, h);
+            instance = new Player(x, y, w, h, assetPath);
         }
         return instance;
     }
 
     // Ritar ut spelaren på kartan och anpassar kartan i förhållande till spelarens koordinater
-    void Player::draw() const
-    {
+    //void Player::draw() const
+    //{
         // const SDL_Rect &rect = getRect();
         // graphic.renderBackground(xPosition, yPosition);
-        SDL_RenderCopy(graphic.get_ren(), playerTexture, NULL, &getRect());
-    }
+       // SDL_RenderCopy(graphic.get_ren(), playerTexture, NULL, &getRect());
+    //}
 
     void Player::keyDown(const SDL_Event &eve)
     {
@@ -153,21 +150,6 @@ namespace crane
         collided = false;
     }
 
-    int Player::getPlayerX() const
-    {
-        return xPosition;
-    }
-
-    int Player::getPlayerY() const
-    {
-        return yPosition;
-    }
-
-    void Player::setSpeed(int newSpeed)
-    {
-        speed = newSpeed;
-    }
-
     void Player::setAdaptToYPosition(bool adapt)
     {
         adaptToYPosition = adapt;
@@ -177,5 +159,3 @@ namespace crane
     {
         adaptFactorToYPosition = newAdaptFactor;
     }
-
-}
