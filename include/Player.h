@@ -10,14 +10,24 @@ using namespace crane;
     public:
         static Player *getInstance(int x, int y, int w, int h, std::string assetPath);
         //~Player(); implementera om Player får egna medlemmar att städa bort
-        //void draw() const override;
         void tick() override;
-        void keyDown(const SDL_Event &) override;
-        void keyUp(const SDL_Event &) override;
         void setAdaptToYPosition(bool adapt);
         void setAdaptFactorToYPosition(int newAdaptFactor);
     protected:
         Player(int x, int y, int w, int h, std::string assetPath);
+        void handleUpArrowKeyDownPress() override;
+        void handleDownArrowKeyDownPress() override;
+        void handleLeftArrowKeyDownPress() override;
+        void handleRightArrowKeyDownPress() override;
+        void handleWKeyDownPress() override;
+        void handleAKeyDownPress() override;
+        void handleSKeyDownPress() override;
+        void handleDKeyDownPress() override;
+
+        void handleWKeyRelease() override;
+        void handleAKeyRelease() override;
+        void handleSKeyRelease() override;
+        void handleDKeyRelease() override;
     private:
         static Player* instance;
         int previousYPosition;

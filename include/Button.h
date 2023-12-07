@@ -10,7 +10,7 @@ namespace crane {
     class Button : public crane::Component {
     public:
         static Button* getInstance(int x, int y, int w, int h, std::string txt);
-        virtual void perform(Button* source) {}
+        virtual void perform(Button* source) {};
         ~Button();
         void mouseDown(const SDL_Event&) override;
         void mouseUp(const SDL_Event&) override;

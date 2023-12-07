@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "Constants.h"
 #include "Graphics.h"
+#include "MovableSprite.h"
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 #include <iostream>
@@ -8,154 +9,158 @@
 // Implementering till spelet som hanterar spelaren
 using namespace crane;
 
-    Player *Player::instance = nullptr;
+Player *Player::instance = nullptr;
 
-    Player::Player(int x, int y, int w, int h, std::string assetPath) : MovableSprite(x, y, w, h, assetPath)
+Player::Player(int x, int y, int w, int h, std::string assetPath) : MovableSprite(x, y, w, h, assetPath)
+{
+    // Hantera skapandet av Player, grafik etc
+    // playerTexture = IMG_LoadTexture(graphic.get_ren(), (constants::gResPath + assetPath).c_str());
+    xVelocity = 0;
+    yVelocity = 0;
+    adaptToYPosition = false;
+    adaptFactorToYPosition = 1;
+    previousYPosition = rect.y;
+}
+
+// Player::~Player() implementera om Player får egna medlemmar att städa bort
+//{
+// SDL_DestroyTexture(playerTexture);
+// }
+
+// Hämta pekare till spelare, tillåter bara en instans av Player
+Player *Player::getInstance(int x, int y, int w, int h, std::string assetPath)
+{
+    if (!instance)
     {
-        // Hantera skapandet av Player, grafik etc
-        //playerTexture = IMG_LoadTexture(graphic.get_ren(), (constants::gResPath + assetPath).c_str());
-        xVelocity = 0;
-        yVelocity = 0;
-        adaptToYPosition = false;
-        adaptFactorToYPosition = 1;
-        previousYPosition = rect.y;
+        instance = new Player(x, y, w, h, assetPath);
     }
+    return instance;
+}
 
-    //Player::~Player() implementera om Player får egna medlemmar att städa bort
-    //{
-        //SDL_DestroyTexture(playerTexture);
-   // }
+void Player::tick()
+{
+    // Implementera hur klassen uppdateras varje frame
 
-    // Hämta pekare till spelare, tillåter bara en instans av Player
-    Player *Player::getInstance(int x, int y, int w, int h, std::string assetPath)
+    if (collided)
     {
-        if (!instance)
+        if (xVelocity > 0)
         {
-            instance = new Player(x, y, w, h, assetPath);
+            xVelocity = -1;
         }
-        return instance;
-    }
-
-    // Ritar ut spelaren på kartan och anpassar kartan i förhållande till spelarens koordinater
-    //void Player::draw() const
-    //{
-        // const SDL_Rect &rect = getRect();
-        // graphic.renderBackground(xPosition, yPosition);
-       // SDL_RenderCopy(graphic.get_ren(), playerTexture, NULL, &getRect());
-    //}
-
-    void Player::keyDown(const SDL_Event &eve)
-    {
-        const Uint8 *keys = SDL_GetKeyboardState(NULL);
-
-        // Hantera piltangenterna på tangentbordet
-        if (keys[SDL_SCANCODE_UP])
+        else if (xVelocity < 0)
         {
-            yVelocity = -speed;
+            xVelocity = 1;
         }
-        if (keys[SDL_SCANCODE_DOWN])
+        else if (yVelocity > 0)
         {
-            yVelocity = speed;
+            yVelocity = -1;
         }
-        if (keys[SDL_SCANCODE_LEFT])
+        else if (yVelocity)
         {
-            xVelocity = -speed;
-        }
-        if (keys[SDL_SCANCODE_RIGHT])
-        {
-            xVelocity = speed;
+            yVelocity = 1;
         }
     }
 
-    void Player::keyUp(const SDL_Event &eve)
+    int windowWidth, windowHeight;
+    SDL_GetWindowSize(graphic.win, &windowWidth, &windowHeight);
+
+    // Kolla om spelaren försöker gå utanför rutans koordinater
+    if (rect.x < 0)
     {
-        switch (eve.key.keysym.sym)
-        {
-        case SDLK_UP:
-        case SDLK_DOWN:
-            yVelocity = 0;
-            break;
-        case SDLK_LEFT:
-        case SDLK_RIGHT:
-            xVelocity = 0;
-            break;
-        }
+        rect.x = 0;
+    }
+    if (rect.y < 0)
+    {
+        rect.y = 0;
+    }
+    if (rect.x + rect.w > windowWidth)
+    {
+        rect.x = windowWidth - rect.w;
+    }
+    if (rect.y + rect.h > windowHeight)
+    {
+        rect.y = windowHeight - rect.h;
     }
 
-    void Player::tick()
-    {
-        // Implementera hur klassen uppdateras varje frame
+    // uppdatera spelarens position
+    rect.x += xVelocity;
+    rect.y += yVelocity;
 
-        if (collided)
+    // Minska/öka spelarens storlek baserat på om den går upp eller ner på skärmen
+    if (adaptToYPosition)
+    {
+        if (rect.y > previousYPosition + 5)
         {
-            if (xVelocity > 0)
+            rect.w += adaptFactorToYPosition;
+            rect.h += adaptFactorToYPosition;
+            previousYPosition = rect.y;
+        }
+        else if (rect.y < previousYPosition - 5)
+        {
+            if (rect.w > 5)
             {
-                xVelocity = -1;
-            } else if (xVelocity < 0) {
-                xVelocity = 1;
-            }
-            else if (yVelocity > 0)
-            {
-                yVelocity = -1;
-            } else if (yVelocity) {
-                yVelocity = 1;
-            }
-        }
-
-        int windowWidth, windowHeight;
-        SDL_GetWindowSize(graphic.win, &windowWidth, &windowHeight);
-
-        // Kolla om spelaren försöker gå utanför rutans koordinater
-        if (rect.x < 0)
-        {
-            rect.x = 0;
-        }
-        if (rect.y < 0)
-        {
-            rect.y = 0;
-        }
-        if (rect.x + rect.w > windowWidth)
-        {
-            rect.x = windowWidth - rect.w;
-        }
-        if (rect.y + rect.h > windowHeight)
-        {
-            rect.y = windowHeight - rect.h;
-        }
-
-        // uppdatera spelarens position
-        rect.x += xVelocity;
-        rect.y += yVelocity;
-
-        // Minska/öka spelarens storlek baserat på om den går upp eller ner på skärmen
-        if (adaptToYPosition)
-        {
-            if (rect.y > previousYPosition + 5)
-            {
-                rect.w += adaptFactorToYPosition;
-                rect.h += adaptFactorToYPosition;
+                rect.w -= adaptFactorToYPosition;
+                rect.h -= adaptFactorToYPosition;
                 previousYPosition = rect.y;
             }
-            else if (rect.y < previousYPosition - 5)
-            {
-                if (rect.w > 5)
-                {
-                    rect.w -= adaptFactorToYPosition;
-                    rect.h -= adaptFactorToYPosition;
-                    previousYPosition = rect.y;
-                }
-            }
         }
-
-        collided = false;
     }
 
-    void Player::setAdaptToYPosition(bool adapt)
-    {
-        adaptToYPosition = adapt;
-    }
+    collided = false;
+}
 
-    void Player::setAdaptFactorToYPosition(int newAdaptFactor)
-    {
-        adaptFactorToYPosition = newAdaptFactor;
-    }
+void Player::setAdaptToYPosition(bool adapt)
+{
+    adaptToYPosition = adapt;
+}
+
+void Player::setAdaptFactorToYPosition(int newAdaptFactor)
+{
+    adaptFactorToYPosition = newAdaptFactor;
+}
+
+void Player::handleUpArrowKeyDownPress()
+{
+}
+void Player::handleDownArrowKeyDownPress()
+{
+}
+void Player::handleLeftArrowKeyDownPress()
+{
+}
+void Player::handleRightArrowKeyDownPress()
+{
+}
+void Player::handleWKeyDownPress()
+{
+    yVelocity = -speed;
+}
+void Player::handleSKeyDownPress()
+{
+    yVelocity = speed;
+}
+void Player::handleAKeyDownPress()
+{
+    xVelocity = -speed;
+}
+void Player::handleDKeyDownPress()
+{
+    xVelocity = speed;
+}
+
+void Player::handleWKeyRelease()
+{
+    yVelocity = 0;
+}
+void Player::handleSKeyRelease()
+{
+    yVelocity = 0;
+}
+void Player::handleAKeyRelease()
+{
+    xVelocity = 0;
+}
+void Player::handleDKeyRelease()
+{
+    xVelocity = 0;
+}

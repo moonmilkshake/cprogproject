@@ -14,6 +14,9 @@ namespace crane {
         void addUIComponent(Component* component);
         void removeUIComponent(Component* component);
         void startGame();
+        void togglePause();
+        void showPauseMenu();
+        void hidePauseMenu();
         bool isGameRunning() const;
         GameEngine();
         ~GameEngine();
@@ -25,6 +28,7 @@ namespace crane {
         std::vector<Component*> gameComponents;
         std::vector<Component*> uiComponents;
         bool gameRunning = false;
+        bool gamePaused = false;
     };
 
 }

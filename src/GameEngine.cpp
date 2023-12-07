@@ -10,12 +10,12 @@ using namespace crane;
 
 #define FPS 60
 
-GameEngine::GameEngine() : gameRunning(false)
+GameEngine::GameEngine() : gameRunning(false) //spelet startas inte direkt
 {
     // Initialize any necessary game engine state here
 }
 
-void GameEngine::addGameComponent(Component *component)
+void GameEngine::addGameComponent(Component *component) //tillåter oss lägga in game components, tex stenar osv
 {
     addedGameComponent.push_back(component);
 }
@@ -25,7 +25,7 @@ void GameEngine::removeGameComponent(Component *component)
     removed.push_back(component);
 }
 
-void GameEngine::addUIComponent(Component *component)
+void GameEngine::addUIComponent(Component *component) //tillåter oss lägga in UIcomponent, text knappar, healthbar 
 {
     addedUiComponent.push_back(component);
 }
@@ -51,6 +51,12 @@ bool GameEngine::isGameRunning() const
     return gameRunning;
 }
 
+void GameEngine::togglePause() 
+{
+    gamePaused = !gamePaused;
+    // Additional logic to handle the game's paused state
+}
+
 void GameEngine::run()
 {
     bool quit = false;
@@ -64,12 +70,20 @@ void GameEngine::run()
 
         while (SDL_PollEvent(&event))
         {
-            if (event.type == SDL_QUIT)
+            if (event.type == SDL_QUIT) 
             {
                 quit = true;
             }
 
-            // Handle key events for game components
+            //Försök på implementera pause med esc:
+            if(event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
+            {
+                togglePause();
+                continue;
+            }
+
+            // Hanterar tangenttryck på gamecomponents, tex player movement
+            //TODO: lägg till alla knappar vi vill ha
             if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
             {
                 for (Component *c : gameComponents)
@@ -85,7 +99,7 @@ void GameEngine::run()
                 }
             }
 
-            // Forward mouse events to UI components
+            // Hanterar Musklick på UIcomponents, knappar
             for (Component *c : uiComponents)
             {
                 if (event.type == SDL_MOUSEBUTTONDOWN)
@@ -99,8 +113,8 @@ void GameEngine::run()
             }
         }
 
-        // Update game components if the game is running
-        if (isGameRunning())
+        // Om spelet körs, uppdatera gameComponents
+        if (isGameRunning() && !gamePaused)
         {
             for (Component *c : gameComponents)
             {
@@ -108,28 +122,39 @@ void GameEngine::run()
             }
         }
 
-        if (!isGameRunning())
-        {
+        //Om spelet inte körs, uppdatera UIcomponents.
+        //if (!isGameRunning())
+        //{
             for (Component *c : uiComponents)
             {
                 c->tick();
             }
+        //}
+
+        if (gamePaused)
+        {
+            /*
+            showPauseMenu();
+        } else {
+            hidePauseMenu();
+            */
         }
 
+        //Ser till att UIComponent är uppdaterad 
         for (Component *c : addedUiComponent)
         {
             uiComponents.push_back(c);
         }
         addedUiComponent.clear();
 
-        // Add new components
+        //Ser till att GameComponent är uppdaterad
         for (Component *c : addedGameComponent)
         {
             gameComponents.push_back(c);
         }
         addedGameComponent.clear();
 
-        // Remove components
+        //Ta bort components
         for (Component *c : removed)
         {
             auto removeComponent = [&c](vector<Component *> &components)
@@ -184,7 +209,7 @@ void GameEngine::run()
 
 GameEngine::~GameEngine()
 {
-    // Clean up components
+    // Rensar dynamiskt allokerat minne
     for (auto c : gameComponents)
     {
         delete c;

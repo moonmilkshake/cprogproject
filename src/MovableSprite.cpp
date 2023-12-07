@@ -3,6 +3,7 @@
 #include "Graphics.h"
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
+#include <iostream>
 
 //Klass för att hantera objekt på skärmen som inte rör på sig
 namespace crane {
@@ -26,6 +27,56 @@ namespace crane {
 
     void MovableSprite::tick() {
         //Implementera hur klassen uppdateras varje frame
+    }
+
+    void MovableSprite::keyDown(const SDL_Event &eve)
+    {
+        switch (eve.key.keysym.sym)
+        {
+            case SDLK_UP:
+                handleUpArrowKeyDownPress();
+                break;
+            case SDLK_DOWN:
+                handleDownArrowKeyDownPress();
+                break;
+            case SDLK_LEFT:
+                handleLeftArrowKeyDownPress();
+                break;
+            case SDLK_RIGHT:
+                handleRightArrowKeyDownPress();
+                break;
+            case SDLK_w:
+                handleWKeyDownPress();  
+                break;
+            case SDLK_a:
+                handleAKeyDownPress();
+                break;
+            case SDLK_s:
+                handleSKeyDownPress();
+                break;
+            case SDLK_d:
+                handleDKeyDownPress();
+                break;
+        }
+    }
+
+    void MovableSprite::keyUp(const SDL_Event &eve)
+    {
+        switch (eve.key.keysym.sym)
+        {
+            case SDLK_w:
+                handleWKeyRelease();  
+                break;
+            case SDLK_a:
+                handleAKeyRelease();
+                break;
+            case SDLK_s:
+                handleSKeyRelease();
+                break;
+            case SDLK_d:
+                handleDKeyRelease();
+                break;
+        }
     }
 
     void MovableSprite::handleCollision(const Component& other) 

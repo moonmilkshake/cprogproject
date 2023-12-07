@@ -30,6 +30,52 @@ private:
     GameEngine* gameEngine;
 };
 
+class ResumeButton : public Button{
+public:
+    ResumeButton(GameEngine* engine)
+        : Button(400, 200, 150, 70, "Resume"), gameEngine(engine) {}
+
+        void perform(Button* source) override {
+            gameEngine->togglePause();
+        }
+
+private:
+    GameEngine* gameEngine;
+};
+/*
+class QuitButton : public Button {
+public:
+    QuitButton(GameEngine* engine)
+        : Button(400,400,150,70, "Quit"), gameEngine(engine) {}
+
+    void perform(Button* source) override {
+        gameEngine->quit();
+    }
+
+private:
+    GameEngine* gameEngine;
+};
+*/
+
+//Ifall vi vill lägga till en pauseKnapp. Just nu funkar den inte av att bara bortkommentera, 
+//kan va för att jag inte satt en bild på den eller liknande i Button.
+/*
+class PauseButton : public Button {
+public:
+    PauseButton(GameEngine* engine) 
+        : Button(400, 300, 150, 70, "Pause"), gameEngine(engine) {}
+
+    void perform(Button* source) override {
+        std::cout << "Toggling pause..." << std::endl;
+        gameEngine->togglePause(); // This method should toggle the pause state in your GameEngine
+    }
+
+private:
+    GameEngine* gameEngine;
+};
+*/
+
+
 class Monster : public MovableSprite {
 public:
     Monster(int x, int y, int w, int h, std::string assetPath, Player* playerInstance) : MovableSprite(x, y, w, h, assetPath) 
@@ -73,7 +119,7 @@ void addMonsters(GameEngine& engine) {
     }
 }
 
-
+//TODO: Implementera loop som lägger till monster
 int main(int argc, char** argv) {
     //graphic.setScreenSize(500, 300);
     graphic.setCustomBackground(constants::gResPath + "images/grassBackground.png");
@@ -81,7 +127,14 @@ int main(int argc, char** argv) {
     Label* lbl = Label::getInstance(270, 100, 100, 70, "0");
     engine.addUIComponent(lbl);
     StartButton* startButton = new StartButton(lbl, &engine);
-    engine.addUIComponent(startButton); 
+    engine.addUIComponent(startButton);
+    //ResumeButton* resumeButton = new ResumeButton(&engine);
+    //engine.addUIComponent(resumeButton);
+    //QuitButton* quitButton = new QuitButton(&engine);
+   //engine.addUIComponent(quitButton);
+
+    //PauseButton* pauseButton = new PauseButton(&engine);
+    //engine.addUIComponent(pauseButton);
     
     Player* player = Player::getInstance(425, 325, 50, 50, "images/tempPlayer.png");
     //player->setAdaptToYPosition(false);
