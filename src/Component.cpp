@@ -7,9 +7,9 @@ namespace crane
     {
     }
 
-    bool Component::checkCollision(const Component& other) const
+    bool Component::checkCollision(const Component* other) const
     {
-        return SDL_HasIntersection(&getRect(), &other.getRect());
+        return SDL_HasIntersection(&getRect(), &other->getRect());
     }
 
     void Component::setCollided(bool newCollided) {

@@ -25,9 +25,7 @@ namespace crane {
         SDL_RenderCopy(graphic.get_ren(), spriteTexture, NULL, &getRect());
 	}
 
-    void MovableSprite::tick() {
-        //Implementera hur klassen uppdateras varje frame
-    }
+    void MovableSprite::tick() {}
 
     void MovableSprite::keyDown(const SDL_Event &eve)
     {
@@ -79,7 +77,7 @@ namespace crane {
         }
     }
 
-    void MovableSprite::handleCollision(const Component& other) 
+    void MovableSprite::handleCollision(const Component*other) 
     {
         
     }
@@ -102,6 +100,7 @@ namespace crane {
     MovableSprite::~MovableSprite()
     {
         SDL_DestroyTexture(spriteTexture);
+        std::cout << "A movablesprite was just destroyed" << std::endl;
     }
 
 }

@@ -1,6 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #include "MovableSprite.h"
+#include "GameEngine.h"
 
 // Implementering till spelet som hanterar spelaren
 using namespace crane;
@@ -8,13 +9,13 @@ using namespace crane;
     class Player : public MovableSprite
     {
     public:
-        static Player *getInstance(int x, int y, int w, int h, std::string assetPath);
+        static Player *getInstance(int x, int y, int w, int h, std::string assetPath, GameEngine* engine);
         //~Player(); implementera om Player får egna medlemmar att städa bort
         void tick() override;
         void setAdaptToYPosition(bool adapt);
         void setAdaptFactorToYPosition(int newAdaptFactor);
     protected:
-        Player(int x, int y, int w, int h, std::string assetPath);
+        Player(int x, int y, int w, int h, std::string assetPath, GameEngine* engine);
         void handleUpArrowKeyDownPress() override;
         void handleDownArrowKeyDownPress() override;
         void handleLeftArrowKeyDownPress() override;
@@ -35,6 +36,7 @@ using namespace crane;
         int xVelocity;
         int yVelocity;
         bool adaptToYPosition;
+        GameEngine* engine;
     };
 
 #endif

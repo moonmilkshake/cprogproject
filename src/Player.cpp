@@ -2,6 +2,8 @@
 #include "Constants.h"
 #include "Graphics.h"
 #include "MovableSprite.h"
+#include "ThrowableRock.h"
+#include "GameEngine.h"
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 #include <iostream>
@@ -11,10 +13,11 @@ using namespace crane;
 
 Player *Player::instance = nullptr;
 
-Player::Player(int x, int y, int w, int h, std::string assetPath) : MovableSprite(x, y, w, h, assetPath)
+Player::Player(int x, int y, int w, int h, std::string assetPath, GameEngine* engine) : MovableSprite(x, y, w, h, assetPath)
 {
     // Hantera skapandet av Player, grafik etc
     // playerTexture = IMG_LoadTexture(graphic.get_ren(), (constants::gResPath + assetPath).c_str());
+    this->engine = engine;
     xVelocity = 0;
     yVelocity = 0;
     adaptToYPosition = false;
@@ -28,11 +31,11 @@ Player::Player(int x, int y, int w, int h, std::string assetPath) : MovableSprit
 // }
 
 // Hämta pekare till spelare, tillåter bara en instans av Player
-Player *Player::getInstance(int x, int y, int w, int h, std::string assetPath)
+Player *Player::getInstance(int x, int y, int w, int h, std::string assetPath, GameEngine* engine)
 {
     if (!instance)
     {
-        instance = new Player(x, y, w, h, assetPath);
+        instance = new Player(x, y, w, h, assetPath, engine);
     }
     return instance;
 }
@@ -121,28 +124,47 @@ void Player::setAdaptFactorToYPosition(int newAdaptFactor)
 
 void Player::handleUpArrowKeyDownPress()
 {
+    int spriteCenterX = static_cast<int>(rect.x + (rect.w / 2)); 
+    int spriteCenterY = static_cast<int>(rect.y + (rect.h / 2)); 
+    ThrowableRock* rock = ThrowableRock::getInstance(spriteCenterX, spriteCenterY, 15, 15, "up", "images/rock.png", engine);
 }
+
 void Player::handleDownArrowKeyDownPress()
 {
+    int spriteCenterX = static_cast<int>(rect.x + (rect.w / 2)); 
+    int spriteCenterY = static_cast<int>(rect.y + (rect.h / 2)); 
+    ThrowableRock* rock = ThrowableRock::getInstance(spriteCenterX, spriteCenterY, 15, 15, "down", "images/rock.png", engine);
 }
+
 void Player::handleLeftArrowKeyDownPress()
 {
+    int spriteCenterX = static_cast<int>(rect.x + (rect.w / 2)); 
+    int spriteCenterY = static_cast<int>(rect.y + (rect.h / 2)); 
+    ThrowableRock* rock = ThrowableRock::getInstance(spriteCenterX, spriteCenterY, 15, 15, "left", "images/rock.png", engine);
 }
+
 void Player::handleRightArrowKeyDownPress()
 {
+    int spriteCenterX = static_cast<int>(rect.x + (rect.w / 2)); 
+    int spriteCenterY = static_cast<int>(rect.y + (rect.h / 2)); 
+    ThrowableRock* rock = ThrowableRock::getInstance(spriteCenterX, spriteCenterY, 15, 15, "right", "images/rock.png", engine);
 }
+
 void Player::handleWKeyDownPress()
 {
     yVelocity = -speed;
 }
+
 void Player::handleSKeyDownPress()
 {
     yVelocity = speed;
 }
+
 void Player::handleAKeyDownPress()
 {
     xVelocity = -speed;
 }
+
 void Player::handleDKeyDownPress()
 {
     xVelocity = speed;
@@ -152,14 +174,17 @@ void Player::handleWKeyRelease()
 {
     yVelocity = 0;
 }
+
 void Player::handleSKeyRelease()
 {
     yVelocity = 0;
 }
+
 void Player::handleAKeyRelease()
 {
     xVelocity = 0;
 }
+
 void Player::handleDKeyRelease()
 {
     xVelocity = 0;

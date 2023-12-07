@@ -11,7 +11,7 @@ namespace crane
     public:
         static MovableSprite *getInstance(int x, int y, int w, int h, std::string assetPath);
         ~MovableSprite();
-        void handleCollision(const Component& other) override;
+        void handleCollision(const Component* other) override;
         int getCurrentX() const;
         int getCurrentY() const;
         void setSpeed(int newSpeed);

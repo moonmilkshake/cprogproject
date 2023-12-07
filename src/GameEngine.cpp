@@ -15,6 +15,15 @@ GameEngine::GameEngine() : gameRunning(false) //spelet startas inte direkt
     // Initialize any necessary game engine state here
 }
 
+void GameEngine::addPauseMenuComponent(Component* component) {
+    pauseMenuComponent.push_back(component);
+    std::cout << "uicomponent created" << std::endl;
+}
+
+void GameEngine::removePauseMenuComponent(Component* component) {
+    removed.push_back(component);
+}
+
 void GameEngine::addGameComponent(Component *component) //tillåter oss lägga in game components, tex stenar osv
 {
     addedGameComponent.push_back(component);
@@ -28,6 +37,8 @@ void GameEngine::removeGameComponent(Component *component)
 void GameEngine::addUIComponent(Component *component) //tillåter oss lägga in UIcomponent, text knappar, healthbar 
 {
     addedUiComponent.push_back(component);
+    std::cout << "Adding UI component" << std::endl;
+
 }
 
 void GameEngine::removeUIComponent(Component *component)
@@ -39,6 +50,8 @@ void GameEngine::removeUIComponent(Component *component)
         // Consider managing memory here if necessary
     }
     removed.push_back(component);
+    std::cout << "Removing UI component" << std::endl;
+
 }
 
 void GameEngine::startGame()
@@ -54,7 +67,26 @@ bool GameEngine::isGameRunning() const
 void GameEngine::togglePause() 
 {
     gamePaused = !gamePaused;
-    // Additional logic to handle the game's paused state
+    std::cout << "Pause toggled: " << (gamePaused ? "ON" : "OFF") << std::endl;
+    for (auto component : pauseMenuComponent) {
+        if (gamePaused) {
+            addUIComponent(component);
+        } else {
+            removeUIComponent(component);
+        }
+    }
+}
+
+void GameEngine::showPauseMenu(){
+    for (auto component : pauseMenuComponent) {
+        addUIComponent(component);
+    }
+}
+
+void GameEngine::hidePauseMenu() {
+    for (auto component : pauseMenuComponent) {
+        removeUIComponent(component);
+    }
 }
 
 void GameEngine::run()
@@ -78,8 +110,9 @@ void GameEngine::run()
             //Försök på implementera pause med esc:
             if(event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
             {
+                std::cout << "Escape key pressed." << std::endl;  // Debug print
                 togglePause();
-                continue;
+                //continue;
             }
 
             // Hanterar tangenttryck på gamecomponents, tex player movement
@@ -113,6 +146,20 @@ void GameEngine::run()
             }
         }
 
+        for (Component *firstC : gameComponents)
+            { // kollar kollision, skilj på tick och kollision, flagga för kollision
+                for (Component *secondC : gameComponents)
+                {
+                    if (firstC != secondC)
+                    {
+                        if (firstC->checkCollision(secondC))
+                        {
+                            firstC->handleCollision(secondC);
+                        }
+                    }
+                }
+            }
+
         // Om spelet körs, uppdatera gameComponents
         if (isGameRunning() && !gamePaused)
         {
@@ -123,13 +170,13 @@ void GameEngine::run()
         }
 
         //Om spelet inte körs, uppdatera UIcomponents.
-        //if (!isGameRunning())
-        //{
+        if (!isGameRunning())
+        {
             for (Component *c : uiComponents)
             {
                 c->tick();
             }
-        //}
+        }
 
         if (gamePaused)
         {
@@ -154,20 +201,42 @@ void GameEngine::run()
         }
         addedGameComponent.clear();
 
-        //Ta bort components
-        for (Component *c : removed)
+       // Remove components
+        if (isGameRunning())
         {
-            auto removeComponent = [&c](vector<Component *> &components)
+            for (Component *c : removed)
             {
-                auto it = std::find(components.begin(), components.end(), c);
-                if (it != components.end())
+                for (vector<Component *>::iterator i = gameComponents.begin();
+                     i != gameComponents.end();)
                 {
-                    components.erase(it);
-                    // Consider managing memory here if necessary
+                    if (*i == c)
+                    {
+                        i = gameComponents.erase(i);
+                    }
+                    else
+                    {
+                        i++;
+                    }
                 }
-            };
-            removeComponent(gameComponents);
-            removeComponent(uiComponents);
+            }
+        }
+        else if (!isGameRunning())
+        {
+            for (Component *c : removed)
+            {
+                for (vector<Component *>::iterator i = uiComponents.begin();
+                     i != uiComponents.end();)
+                {
+                    if (*i == c)
+                    {
+                        i = uiComponents.erase(i);
+                    }
+                    else
+                    {
+                        i++;
+                    }
+                }
+            }
         }
         removed.clear();
 

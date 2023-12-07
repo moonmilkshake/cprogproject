@@ -23,10 +23,10 @@ namespace crane
 
         //loadBackground(constants::gResPath + "images/BG_03.png");
 
-        Mix_OpenAudio(20050, AUDIO_S16SYS, 2, 4096);
+        //Mix_OpenAudio(20050, AUDIO_S16SYS, 2, 4096);
         // anger ljudformat(16-bit), antalet kanaler(2 för stereo) och storleken på ljudbufferten (4096)
-        music = Mix_LoadWAV((constants::gResPath + "sounds/christmasPiano.mp3").c_str());
-        Mix_PlayChannel(-1, music, -1);
+        //music = Mix_LoadWAV((constants::gResPath + "sounds/christmasPiano.mp3").c_str());
+        //Mix_PlayChannel(-1, music, -1);
         // Spelar upp inladdade musiken, -1= använda första tillgängliga kanal, andra -1 == loopa musiken.
         SDL_GetWindowSizeInPixels(win, &screenWidth, &screenHeight);
     }

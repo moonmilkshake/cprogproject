@@ -27,7 +27,7 @@ namespace crane {
         //Implementera hur klassen uppdateras varje frame
     }
 
-    void ImmovableSprite::handleCollision(const Component& other) 
+    void ImmovableSprite::handleCollision(const Component* other) 
     {
         
     }

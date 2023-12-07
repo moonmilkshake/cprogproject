@@ -3,37 +3,35 @@
 #include "GameEngine.h"
 #include "Graphics.h"
 #include "ImmovableSprite.h"
+#include "ThrowableRock.h"
 #include "Button.h"
-#include "Label.h"
 #include <string>
 #include <iostream>
 #include <chrono>
 #include <thread>
-
 using namespace crane;
 
 GameEngine engine;
 
 class StartButton : public Button {
 public:
-    StartButton(Label* lbl, GameEngine* engine) 
-        : Button(400, 300, 150, 70, "Start"), label(lbl), gameEngine(engine) {}
+    StartButton(GameEngine* engine, std::string upAssetPath, std::string downAssetPath) 
+        : Button(400, 300, 150, 70, upAssetPath, downAssetPath), gameEngine(engine) {}
 
     void perform(Button* source) override {
         std::cout << "Starting game..." << std::endl;
         gameEngine->startGame();
-        gameEngine->removeUIComponent(this); // Remove the button when the game starts
+        gameEngine->removeUIComponent(this);
     }
 
 private:
-    Label* label;
     GameEngine* gameEngine;
 };
 
 class ResumeButton : public Button{
 public:
-    ResumeButton(GameEngine* engine)
-        : Button(400, 200, 150, 70, "Resume"), gameEngine(engine) {}
+    ResumeButton(GameEngine* engine, std::string upAssetPath, std::string downAssetPath)
+        : Button(400, 200, 150, 70, upAssetPath, downAssetPath), gameEngine(engine) {}
 
         void perform(Button* source) override {
             gameEngine->togglePause();
@@ -105,6 +103,14 @@ public:
         }
     }
 
+    void handleCollision(const Component* other)
+    {
+        const ThrowableRock* rockPtr = dynamic_cast<const ThrowableRock*>(other);
+        if (rockPtr != nullptr) {
+            engine.removeGameComponent(this);
+        }
+    }
+
 private:
     Player* player;
 };
@@ -124,19 +130,17 @@ int main(int argc, char** argv) {
     //graphic.setScreenSize(500, 300);
     graphic.setCustomBackground(constants::gResPath + "images/grassBackground.png");
 
-    Label* lbl = Label::getInstance(270, 100, 100, 70, "0");
-    engine.addUIComponent(lbl);
-    StartButton* startButton = new StartButton(lbl, &engine);
+    StartButton* startButton = new StartButton(&engine, constants::gResPath + "images/start.png", constants::gResPath + "images/stentroll.png");
     engine.addUIComponent(startButton);
-    //ResumeButton* resumeButton = new ResumeButton(&engine);
-    //engine.addUIComponent(resumeButton);
+    ResumeButton* resumeButton = new ResumeButton(&engine, constants::gResPath + "images/resume.png", constants::gResPath + "images/start.png");
+    engine.addPauseMenuComponent(resumeButton);
     //QuitButton* quitButton = new QuitButton(&engine);
    //engine.addUIComponent(quitButton);
 
     //PauseButton* pauseButton = new PauseButton(&engine);
     //engine.addUIComponent(pauseButton);
     
-    Player* player = Player::getInstance(425, 325, 50, 50, "images/tempPlayer.png");
+    Player* player = Player::getInstance(425, 325, 50, 50, "images/tempPlayer.png", &engine);
     //player->setAdaptToYPosition(false);
     //player->setAdaptFactorToYPosition(1);
     engine.addGameComponent(player);
@@ -157,14 +161,14 @@ int main(int argc, char** argv) {
     engine.addGameComponent(treeOne);
     engine.addGameComponent(treeTwo);
 
-    Monster* monster = Monster::getInstance(150, 325, 42, 42, "images/tempMonster.png", player);
+    Monster* monster = Monster::getInstance(150, 325, 42, 42, "images/stentroll.png", player);
     engine.addGameComponent(monster);
     //std::thread monsterThread(addMonsters, std::ref(engine));
 
 
     engine.run();
-
-
+    delete startButton;
+    delete resumeButton;
     //monsterThread.join();
 
     return 0;

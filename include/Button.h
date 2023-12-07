@@ -7,23 +7,23 @@
 
 namespace crane {
 
-    class Button : public crane::Component {
+    class Button : public Component {
     public:
-        static Button* getInstance(int x, int y, int w, int h, std::string txt);
-        virtual void perform(Button* source) {};
-        ~Button();
+        Button(int x, int y, int w, int h, std::string upAssetPath, std::string downAssetPath);
+        virtual ~Button();
+        virtual void perform(Button* source) = 0;
         void mouseDown(const SDL_Event&) override;
         void mouseUp(const SDL_Event&) override;
         void draw() const override;
-    protected:
-        Button(int x, int y, int w, int h, std::string txt);
 
-    private:
-        std::string text;
-        SDL_Texture* texture;
-        SDL_Texture* startIcon;
+    protected:
+        SDL_Texture* upIcon;
         SDL_Texture* downIcon;
         bool isDown = false;
+
+    private:
+        Button(const Button&) = delete;
+        Button& operator=(const Button&) = delete;
     };
 
 }

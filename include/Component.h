@@ -16,9 +16,9 @@ namespace crane
         virtual void draw() const = 0;
         virtual void tick() {}
 		const SDL_Rect& getRect() const { return rect; }
-		virtual bool checkCollision(const Component& other) const;
+		virtual bool checkCollision(const Component* other) const;
 		void setCollided(bool newCollided);
-		virtual void handleCollision(const Component& other) {}
+		virtual void handleCollision(const Component* other) {}
 	protected:
 		Component(int x, int y, int w, int h);
 		bool collided = false;

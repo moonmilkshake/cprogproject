@@ -11,7 +11,7 @@ namespace crane
     public:
         static ImmovableSprite *getInstance(int x, int y, int w, int h, std::string assetPath);
         ~ImmovableSprite();
-        void handleCollision(const Component& other) override;
+        void handleCollision(const Component* other) override;
     protected:
         ImmovableSprite(int x, int y, int w, int h, std::string assetPath);
         void draw() const override;

@@ -9,6 +9,8 @@ namespace crane {
     class GameEngine {
     public:
         void run();
+        void addPauseMenuComponent(Component* component);
+        void removePauseMenuComponent(Component* component);    
         void addGameComponent(Component* component);
         void removeGameComponent(Component* component);
         void addUIComponent(Component* component);
@@ -22,6 +24,7 @@ namespace crane {
         ~GameEngine();
 
     private:
+        std::vector<Component*> pauseMenuComponent;
         std::vector<Component*> addedGameComponent;
         std::vector<Component*> addedUiComponent;
         std::vector<Component*> removed;

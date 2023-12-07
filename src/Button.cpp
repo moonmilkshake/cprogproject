@@ -7,64 +7,45 @@
 #include <iostream>
 
 namespace crane{
-    Button::Button(int x, int y, int w, int h, std::string txt): Component(x, y, w, h) //Position x,y Bredd och Höjd w,h och en string i konstruktorn
-    {
-        SDL_Surface*surf = TTF_RenderText_Solid(graphic.get_font(), txt.c_str(), { 0,0,0 }); //renderar knappens text till SDL surface
-        texture = SDL_CreateTextureFromSurface(graphic.get_ren(), surf); //Sen skapas texture från surface, som används för att visa knappens text. men vi har ingen text
-        SDL_FreeSurface(surf);
-        //TODO: Ändra så att knappbilen ligger i TempMain
-        startIcon = IMG_LoadTexture(graphic.get_ren(), (constants::gResPath + "images/3e1af784d6f5369.png").c_str() ); //rpresenterar knappen innan nedtryck
-        downIcon = IMG_LoadTexture(graphic.get_ren(), (constants::gResPath + "").c_str() ); //representerar knappen nedtryckt
-
+    Button::Button(int x, int y, int w, int h, std::string upAssetPath, std::string downAssetPath) : Component(x, y, w, h), upIcon(nullptr), downIcon(nullptr), isDown(false) {
+        upIcon = IMG_LoadTexture(graphic.get_ren(), upAssetPath.c_str());
+        if (!upIcon) {
+            std::cerr << "Failed to load texture: " << upAssetPath << " SDL_image Error: " << IMG_GetError() << std::endl;
+        }
+        // If you have a different image for the down state, load it here
+        downIcon = IMG_LoadTexture(graphic.get_ren(), downAssetPath.c_str());
+        if (!downIcon) {
+            std::cerr << "Failed to load texture: " << upAssetPath << " SDL_image Error: " << IMG_GetError() << std::endl;
+        }
     }
 
-    Button::~Button() //Destruktor, städar upp och tar bort textures.
-    {
-        SDL_DestroyTexture(texture);
-        SDL_DestroyTexture(startIcon);
+    Button::~Button() {
+        SDL_DestroyTexture(upIcon);
         SDL_DestroyTexture(downIcon);
     }
 
-    
-    Button* Button::getInstance(int x, int y, int w, int h, std::string txt){ //en statisk factory funktion
-        return new Button(x, y, w, h, txt);
-    }
-    
-    void Button::mouseDown(const SDL_Event& eve){
-        SDL_Point p = { eve.button.x, eve.button.y};
-        if (SDL_PointInRect(&p, &getRect()))
-           isDown = true;
+    void Button::mouseDown(const SDL_Event& event) {
+        SDL_Point p = { event.button.x, event.button.y };
+        if (SDL_PointInRect(&p, &getRect())) {
+            isDown = true;
+        }
     }
 
-    void Button::mouseUp(const SDL_Event& eve){
-        SDL_Point p = { eve.button.x, eve.button.y};
-        if (SDL_PointInRect(&p, &getRect()))
+    void Button::mouseUp(const SDL_Event& event) {
+        SDL_Point p = { event.button.x, event.button.y };
+        if (SDL_PointInRect(&p, &getRect())) {
             perform(this);
-            
-        isDown = false;
+            isDown = false;
+        }
     }
 
     void Button::draw() const {
-    // Render the button icon
-    if (isDown) {
-        if (downIcon != nullptr) {
-            SDL_RenderCopy(graphic.get_ren(), downIcon, NULL, &getRect());
-        }
-    } else {
-        if (startIcon != nullptr) {
-            SDL_RenderCopy(graphic.get_ren(), startIcon, NULL, &getRect());
+        SDL_SetRenderDrawColor(graphic.get_ren(), 255, 0, 0, 255); // Red color
+        SDL_RenderFillRect(graphic.get_ren(), &getRect());
+        
+        SDL_Texture* icon = isDown && downIcon ? downIcon : upIcon;
+        if (icon != nullptr) {
+            SDL_RenderCopy(graphic.get_ren(), icon, NULL, &getRect());
         }
     }
-
-    // Render the button text
-    if (texture != nullptr) {
-        // Adjust the destination rectangle if necessary to position the text correctly
-        SDL_Rect textRect = getRect();
-        // You might want to adjust textRect here to position the text correctly
-        SDL_RenderCopy(graphic.get_ren(), texture, NULL, &textRect);
-    }
-}
-
-
-
 }
